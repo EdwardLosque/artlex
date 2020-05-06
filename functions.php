@@ -217,7 +217,7 @@ function block_common_user_in_destach_category(){
 				window.location.href = "https://artlex.com.br/registrar-atacadista/";
 				break;
 			case "login":
-				window.location.href = "https://artlex.com.br/minha-conta/";
+				window.location.href = "https://artlex.com.br/registrar-atacadista/";
 				break;
 			default:
 
@@ -225,13 +225,48 @@ function block_common_user_in_destach_category(){
 	});
 </script><?php
 
+		} if(array_intersect($allowed_roles, $user->roles ) || ($aproved === false)){
+		    ?><script>
+            	swal({
+            		title: "Opss...",
+            		text: "Seu perfil atacadista ainda está em análise. Em breve teremos novidades",
+            		buttons: {
+            			// 						cancel: "Voltar Para o Site",
+            			request: {
+            				text: "Voltar para Home",
+            				value: "request",
+            			}
+            		},
+            	})
+            		.then((value) => {
+            		switch (value) {
+            			case "request":
+            				swal("Você será redirecionado para a página de cadastro");
+            				window.location.href = "https://artlex.com.br/";
+            				break;
+            			case "login":
+            				window.location.href = "https://artlex.com.br/";
+            				break;
+            			default:
+            
+            		}
+            	});
+            </script><?php
 		}
+	} else if(!array_intersect($allowed_roles, $user->roles ) || ($aproved === false)){
+		?>
+			<style>
+				li.product.type-product.status-publish.product_cat-atacado.has-post-thumbnail.purchasable.product-type-simple{
+					display:none!important;
+				}
+			</style>
+		<?php
 	}
 }
 
 add_action('woocommerce_before_shop_loop', 'block_common_user_in_destach_category', 1);
 function add_custom_scripts_atacadista_project(){
-?><script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script><?php
+	?><script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script><?php
 }
 add_action('wp_head', 'add_custom_scripts_atacadista_project');
 
@@ -252,14 +287,19 @@ function wooc_extra_register_fields() {
 	<input type="text" class="input-text" name="billing_last_name" id="reg_billing_last_name" value="<?php if ( ! empty( $_POST['billing_last_name'] ) ) esc_attr_e( $_POST['billing_last_name'] ); ?>" />
 </p>
 <p class="form-row form-row-wide">
-	<label for="billing_cpf"><?php _e( 'CPF', 'woocommerce' ); ?><span class="required">*</span></label>
+	<label for="billing_cpf"><?php _e( 'CPF', 'woocommerce' ); ?><span class=""></span></label>
 	<input type="text" class="input-text" name="billing_cpf" id="billing_cpf" value="<?php if ( ! empty( $_POST['billing_cpf'] ) ) esc_attr_e( $_POST['billing_cpf'] ); ?>" />
 </p>
 
 <p class="form-row form-row-wide">
+	<label for="billing_cellphone"><?php _e( 'Celular(Whatsapp)', 'woocommerce' ); ?><span class="required">*</span></label>
+	<input type="text" class="input-text" name="billing_cellphone" id="billing_cellphone" value="<?php esc_attr_e( $_POST['billing_cellphone'] ); ?>" />
+</p>
+<p class="form-row form-row-wide">
 	<label for="reg_billing_phone"><?php _e( 'Phone', 'woocommerce' ); ?><span class="required">*</span></label>
 	<input type="text" class="input-text" name="billing_phone" id="reg_billing_phone" value="<?php esc_attr_e( $_POST['billing_phone'] ); ?>" />
 </p>
+
 <p class="form-row form-row-wide">
 	<label for="billing_address_1"><?php _e( 'Endereço', 'woocommerce' ); ?><span class="required">*</span></label>
 	<input type="text" class="input-text" name="billing_address_1" id="billing_address_1" value="<?php esc_attr_e( $_POST['billing_address_1'] ); ?>" />
@@ -269,8 +309,12 @@ function wooc_extra_register_fields() {
 	<input type="text" class="input-text" name="billing_number" id="billing_number" value="<?php esc_attr_e( $_POST['billing_number'] ); ?>" />
 </p>
 <p class="form-row form-row-wide">
-	<label for="billing_address_2"><?php _e( 'Bairro', 'woocommerce' ); ?><span class="required">*</span></label>
+	<label for="billing_number"><?php _e( 'Complemento', 'woocommerce' ); ?><span class="required">*</span></label>
 	<input type="text" class="input-text" name="billing_address_2" id="billing_address_2" value="<?php esc_attr_e( $_POST['billing_address_2'] ); ?>" />
+</p>
+<p class="form-row form-row-wide">
+	<label for="billing_neighborhood"><?php _e( 'Bairro', 'woocommerce' ); ?><span class="required">*</span></label>
+	<input type="text" class="input-text" name="billing_neighborhood" id="billing_neighborhood" value="<?php esc_attr_e( $_POST['billing_neighborhood'] ); ?>" />
 </p>
 <p class="form-row form-row-wide">
 	<label for="billing_city"><?php _e( 'Cidade', 'woocommerce' ); ?><span class="required">*</span></label>
@@ -308,10 +352,14 @@ function wooc_extra_register_fields() {
 
 <script>
 	jQuery(document).ready(function(){
-		jQuery('input#reg_billing_phone').mask('(00) 0000-00009');
+		jQuery('input#reg_billing_phone').mask('(00) 0000-0000');
+		jQuery('input#billing_cellphone').mask('(00) 00000-0000');
+		jQuery('input#reg_inscricao_estadual').mask('0000000000000000000000000');
+		jQuery('input#billing_number').mask('0000000');
+		
+		jQuery('input#billing_postcode').mask('00.000-000');
 		jQuery('input#billing_cpf').mask('000.000.000-00');
 		jQuery('input#reg_cnpj').mask('00.000.000/0000-00');
-		jQuery('input#billing_postcode').mask('00.000-000');
 	});
 </script>
 
@@ -325,8 +373,14 @@ function wooc_validate_extra_register_fields( $username, $email, $validation_err
 		if ( isset( $_POST['billing_first_name'] ) && empty( $_POST['billing_first_name'] ) ) {
 			$validation_errors->add( 'billing_first_name_error', __( '<strong>Error</strong>: Nome é obrigatório', 'woocommerce' ) );
 		}
+		if ( isset( $_POST['billing_cellphone'] ) && empty( $_POST['billing_cellphone'] ) ) {
+			$validation_errors->add( 'billing_cellphone', __( '<strong>Error</strong>: Celular é obrigatório', 'woocommerce' ) );
+		}
+		if ( isset( $_POST['billing_phone'] ) && empty( $_POST['billing_phone'] ) ) {
+			$validation_errors->add( 'billing_phone', __( '<strong>Error</strong>: Telefone é obrigatório', 'woocommerce' ) );
+		}
 		if ( isset( $_POST['billing_cpf'] ) && empty( $_POST['billing_cpf'] ) ) {
-			$validation_errors->add( 'billing_cpf', __( '<strong>Error</strong>: CPF é obrigatório', 'woocommerce' ) );
+			//$validation_errors->add( 'billing_cpf', __( '<strong>Error</strong>: CPF é obrigatório', 'woocommerce' ) );
 		}
 		if ( isset( $_POST['billing_last_name'] ) && empty( $_POST['billing_last_name'] ) ) {
 			$validation_errors->add( 'billing_last_name_error', __( '<strong>Error</strong>: Sobrenome é obrigatório', 'woocommerce' ) );
@@ -343,7 +397,7 @@ function wooc_validate_extra_register_fields( $username, $email, $validation_err
 		if ( isset( $_POST['billing_address_1'] ) && empty( $_POST['billing_address_1'] ) ) {
 			$validation_errors->add( 'billing_address_1', __( '<strong>Erro:</strong>: Endereço é obrigatório', 'woocommerce' ) );
 		}
-		if ( isset( $_POST['billing_address_2'] ) && empty( $_POST['billing_address_2'] ) ) {
+		if ( isset( $_POST['billing_neighborhood'] ) && empty( $_POST['billing_neighborhood'] ) ) {
 			$validation_errors->add( 'billing_address_2', __( '<strong>Erro:</strong>: Bairro é obrigatório', 'woocommerce' ) );
 		}
 		if ( isset( $_POST['billing_city'] ) && empty( $_POST['billing_city'] ) ) {
@@ -396,7 +450,9 @@ function woocom_save_extra_register_fields($customer_id) {
 	}
 	if ( isset( $_POST['billing_address_1'] ) ) {
 		update_user_meta( $customer_id, 'billing_address_1', sanitize_text_field( $_POST['billing_address_1'] ) );
-		update_user_meta( $customer_id, 'billing_neighborhood', sanitize_text_field( $_POST['billing_address_2'] ) );
+		update_user_meta( $customer_id, 'billing_neighborhood', sanitize_text_field( $_POST['billing_neighborhood'] ) );
+		update_user_meta( $customer_id, 'billing_phone', sanitize_text_field( $_POST['billing_phone'] ) );
+		update_user_meta( $customer_id, 'billing_cellphone', sanitize_text_field( $_POST['billing_cellphone'] ) );
 		update_user_meta( $customer_id, 'billing_city', sanitize_text_field( $_POST['billing_city'] ) );
 		update_user_meta( $customer_id, 'billing_postcode', sanitize_text_field( $_POST['billing_postcode'] ) );
 		update_user_meta( $customer_id, 'billing_number', sanitize_text_field( $_POST['billing_number'] ) );
@@ -503,6 +559,7 @@ function custom_registration_redirect() {
 // Customizar Colunas Usuário Atacadista
 function linked_url() {
 	add_menu_page( 'linked_url', 'Usuários Atacadistas', 'read', 'users.php?role=atacadista', '', 'dashicons-admin-users', 3 );
+	add_menu_page( 'linked_url', 'Pedidos Atacadistas', 'read', 'edit.php?post_status=wc-atacadista-aprova&post_type=shop_order', '', 'dashicons-screenoptions', 4 );
 }
 add_action( 'admin_menu', 'linked_url' );
 
@@ -563,18 +620,18 @@ function analise_atacadista(){
 ?><hr><?php 
 		if($aproved){
 ?>
-<h3>Seu perfil atacadista está aprovado!!</h3>
-<span>
+<h3 style="color:red">Seu perfil atacadista está aprovado!!</h3>
+<span style="color:red">
 	Seus valores aprovados para a compra são:<br>
 	Valor Mínimo: R$<?php echo $min_value ?>,00;<br>
 	Valor Máximo: R$<?php echo $max_value ?>,00.
 </span><br>
-<span>Seu pagamento poderá ser parcelado em <?php echo $message_payment; ?></span>
+<span style="color:red">Seu pagamento poderá ser parcelado em <?php echo $message_payment; ?></span>
 <?php
 					} else {
 ?>
-<h3>Seu perfil atacadista ainda está em análise</h3>
-<span>Em breve teremos novidades</span>
+<h3 style="color:red">Seu perfil atacadista ainda está em análise</h3>
+<span  style="color:red">Em breve teremos novidades</span>
 <?php
 		}
 	}
@@ -582,3 +639,30 @@ function analise_atacadista(){
 }
 
 add_action('woocommerce_account_content', 'analise_atacadista');
+
+function customize_order_atacadista(){
+	global $order, $post;
+    if( ! is_a($order, 'WC_Order') ) {
+        $order_id = $post->ID;
+    } else {
+        $order_id = $order->id;
+    }
+    // Get the user ID
+    $user_id = get_post_meta($order_id, '_customer_user', true);
+	
+	$name_enterprise = get_field('nome_fantasia', 'user_'. $user_id );
+	$name_social = get_field('razao_social', 'user_'. $user_id );
+	$cnpj = get_field('cnpj', 'user_'. $user_id );
+	$ie = get_field('inscricao_estadual', 'user_'. $user_id );
+	$time = get_field('tempo_para_pagamento', 'user_'. $user_id );
+?>
+
+	<p><b>Nome Fantasia: </b><?php echo $name_enterprise; ?><br>
+	<b>Razão Social: </b><?php echo $name_social; ?><br>
+	<b>CNPJ: </b><?php echo $cnpj; ?><br>
+	<b>Inscrição Estadual: </b><?php echo $ie; ?><br>
+	<b>Tempo para faturamento: </b><?php echo $time; ?></p>
+
+	<?php
+}
+add_action('woocommerce_admin_order_data_after_billing_address', 'customize_order_atacadista', 5);
